@@ -56,12 +56,12 @@ static long  long_tot_miles = 0;
 
 static int  PersistTimeBG      = 0;
 static int  PersistTimeText    = 0;
+static int  PersistStepsBG      = 0;
 static int  PersistStepsText     = 0;
 static char PersistDateFormat[]  =  "0";   // 0 = US, 1 = Intl
 static char PersistTempFormat[]  =  "0";   // 0 = F, 1 = C
 static int  PersistBTLoss       = 0;
 static int  PersistLow_Batt     = 0;
-static int  PersistStepsBG      = 0;
 
 GColor TextColorHold1;
 GColor TextColorHold2;
@@ -657,8 +657,8 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context) {
 
          text_layer_set_background_color(text_steps_layer,       ColorHold);
          text_layer_set_background_color(text_numsteps_layer,    ColorHold);
-         text_layer_set_background_color(text_meters_layer,    ColorHold);
-         //text_layer_set_background_color(text_time2_layer,     ColorHold);
+         text_layer_set_background_color(text_meters_layer,      ColorHold);
+         text_layer_set_background_color(text_miles_layer,       ColorHold);
 
   //****************
 
@@ -728,7 +728,8 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context) {
 
          TextColorHold2 = ColorHold; //Save for BT callback
          text_layer_set_text_color(text_numsteps_layer,    ColorHold);
-         text_layer_set_text_color(text_meters_layer,    ColorHold);
+         text_layer_set_text_color(text_meters_layer,      ColorHold);
+         text_layer_set_text_color(text_miles_layer,       ColorHold);
 
   //****************
 
@@ -1072,23 +1073,6 @@ void handle_init(void) {
      layer_add_child(window_layer, text_layer_get_layer(text_numsteps_layer)); 
   #endif 
   
-// Meters
-  #ifdef PBL_PLATFORM_CHALK
-     text_meters_layer = text_layer_create(GRect(3, 135, 177, 29));
-     text_layer_set_text_alignment(text_meters_layer, GTextAlignmentCenter);;
-  #else
-     text_meters_layer = text_layer_create(GRect(1, 140, 144, 28));
-     text_layer_set_text_alignment(text_meters_layer, GTextAlignmentCenter);;
-  #endif
-
-  text_layer_set_text_color(text_meters_layer, TEXTCOLOR2);
-  text_layer_set_background_color(text_meters_layer, BGCOLOR2);
-  text_layer_set_font(text_meters_layer, fontRobotoCondensed23);
- 
-  #ifdef PBL_HEALTH
-     layer_add_child(window_layer, text_layer_get_layer(text_meters_layer)); 
-  #endif 
-
   // Miles
   #ifdef PBL_PLATFORM_CHALK
      text_miles_layer = text_layer_create(GRect(3, 135, 177, 29));
@@ -1105,6 +1089,24 @@ void handle_init(void) {
   #ifdef PBL_HEALTH
      layer_add_child(window_layer, text_layer_get_layer(text_miles_layer)); 
   #endif
+  
+  // Meters
+  #ifdef PBL_PLATFORM_CHALK
+     text_meters_layer = text_layer_create(GRect(3, 135, 177, 29));
+     text_layer_set_text_alignment(text_meters_layer, GTextAlignmentCenter);;
+  #else
+     text_meters_layer = text_layer_create(GRect(1, 140, 144, 28));
+     text_layer_set_text_alignment(text_meters_layer, GTextAlignmentCenter);;
+  #endif
+
+  text_layer_set_text_color(text_meters_layer, TEXTCOLOR2);
+  text_layer_set_background_color(text_meters_layer, BGCOLOR2);
+  text_layer_set_font(text_meters_layer, fontRobotoCondensed23);
+ 
+  #ifdef PBL_HEALTH
+     layer_add_child(window_layer, text_layer_get_layer(text_meters_layer)); 
+  #endif 
+
   
   //Bluetooth Logo Setup area
   #ifdef PBL_PLATFORM_CHALK
