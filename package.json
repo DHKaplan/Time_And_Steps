@@ -1,0 +1,76 @@
+{
+    "author": "WA1OUI",
+    "dependencies": {
+        "pebble-clay": "^*"
+    },
+    "keywords": [],
+    "name": "time-and-steps",
+    "pebble": {
+        "capabilities": [
+            "location",
+            "configurable",
+            "health"
+        ],
+        "displayName": "Time and Steps",
+        "enableMultiJS": true,
+        "messageKeys": {
+            "BT_LOSS_KEY": 5,
+            "DATE_FORMAT_KEY": 4,
+            "LOW_BATTERY_KEY": 6,
+            "STEPS_BG_COLOR_KEY": 1,
+            "STEPS_TEXT_COLOR_KEY": 3,
+            "TEMP_FORMAT_KEY": 11,
+            "TIME_BG_COLOR_KEY": 0,
+            "TIME_TEXT_COLOR_KEY": 2,
+            "WEATHER_CITY_KEY": 10,
+            "WEATHER_TEMPERATURE_KEY": 9
+        },
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "fonts/Roboto Condensed Regular",
+                    "name": "FONT_ROBOTO_CONDENSED_23",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/monaco.ttf",
+                    "name": "FONT_MONACO_25",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/monaco.ttf",
+                    "name": "FONT_MONACO_13",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/Roboto-Bold.ttf",
+                    "name": "FONT_ROBOTO_BOLD_SUBSET_35",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/Roboto-Bold.ttf",
+                    "name": "FONT_ROBOTO_BOLD_SUBSET_30",
+                    "targetPlatforms": null,
+                    "type": "font"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+        ],
+        "uuid": "a51db8a1-c955-46c3-a85b-352680e9f305",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "1.0.0"
+}
