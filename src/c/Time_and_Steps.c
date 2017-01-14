@@ -384,7 +384,7 @@ static void health_handler(HealthEventType event, void *context) {
             if(mask & HealthServiceAccessibilityMaskAvailable) {                
                 int steps = (int)health_service_sum_today(metric);
                 APP_LOG(APP_LOG_LEVEL_INFO, "Steps from Health = %d", steps);
-                steps = 500000; // Test value
+                //steps = 500000; // Test value
               
                 if (steps > 999) {
                     snprintf(steps_str, 13, "%d,%03d Steps", steps/1000, steps%1000);            
@@ -401,7 +401,7 @@ static void health_handler(HealthEventType event, void *context) {
                 int meters = (int)health_service_sum_today(metric);                
                 APP_LOG(APP_LOG_LEVEL_INFO, "Meters from Health = %d", meters);
                
-                meters = 500000; // TEST VALUE 3500 meters = 2.174 miles / 500 meters = 0.31 miles / 50,000 meters = 31.06 mi
+                //meters = 500000; // TEST VALUE 3500 meters = 2.174 miles / 500 meters = 0.31 miles / 50,000 meters = 31.06 mi
             
             //Meters
             if (meters > 999) {
@@ -483,9 +483,7 @@ static void health_handler(HealthEventType event, void *context) {
                     strncat(miles_out, miles_tenths_str, 2);
 
                     strcat(miles_out, " Miles"); 
-                         APP_LOG(APP_LOG_LEVEL_INFO, "Miles_out = %s", miles_out);
-              
-              
+                    APP_LOG(APP_LOG_LEVEL_INFO, "Miles_out = %s", miles_out);             
               
                 } else {      // < 1 mile
                    long_tenth_miles = (meters * 1000)  / 160934;
@@ -498,7 +496,8 @@ static void health_handler(HealthEventType event, void *context) {
                 }
             
             } else {
-                strcpy(meters_str, "No Dist Data");
+                strcpy(meters_out, " ");
+                strcpy(miles_out, "No Dist Data");
                 APP_LOG(APP_LOG_LEVEL_DEBUG, "Dist Unavailable");
             }
         }
@@ -553,6 +552,7 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
      strftime(date_text,  sizeof(date_text), date_format, tick_time);
      text_layer_set_text(text_date_layer,  date_text);  
     
+     //Health Data
      text_layer_set_text(text_numsteps_layer, steps_str);
      text_layer_set_text(text_miles_layer,    miles_out);
      text_layer_set_text(text_meters_layer,   meters_out);
