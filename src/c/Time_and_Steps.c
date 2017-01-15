@@ -42,7 +42,7 @@ static char date_format[]       = "  %a %m/%d/%y";
 static char text_location[18]   = "N/A";
 static char text_degrees[]      = "N/A ";
 
-static char steps_str[13];
+static char steps_str[15];
 static char meters_str[13];
 static char meters1_str[13];
 static char meters_out[15];
@@ -55,9 +55,9 @@ static long  long_miles = 0;
 static long  long_tot_miles = 0;
 
 static int  PersistTimeBG      = 0;
+static int  PersistStepsBG     = 0;
 static int  PersistTimeText    = 0;
-static int  PersistStepsBG      = 0;
-static int  PersistStepsText     = 0;
+static int  PersistStepsText   = 0;
 static char PersistDateFormat[]  =  "0";   // 0 = US, 1 = Intl
 static char PersistTempFormat[]  =  "0";   // 0 = F, 1 = C
 static int  PersistBTLoss       = 0;
@@ -99,37 +99,39 @@ void battery_line_layer_update_callback(Layer *BatteryLineLayer, GContext* batct
      graphics_fill_rect(batctx, layer_get_bounds(BatteryLineLayer), 3, GCornersAll);
 
      if (batterycharging == 1) {
-          #ifdef PBL_PLATFORM_APLITE
+          #ifdef PBL_BW
              graphics_context_set_fill_color(batctx, GColorBlack);
           #else
              graphics_context_set_fill_color(batctx, GColorBlue);
           #endif
-
+          APP_LOG(APP_LOG_LEVEL_WARNING, "battery charging = 1");
           graphics_fill_rect(batctx, GRect(2, 1, 100, 4), 3, GCornersAll);
      } else if (batterychargepct > 20) {
-          #ifdef PBL_PLATFORM_APLITE
+          #ifdef PBL_BW
              graphics_context_set_fill_color(batctx, GColorBlack);
           #else
              graphics_context_set_fill_color(batctx, GColorGreen);
           #endif
+          APP_LOG(APP_LOG_LEVEL_WARNING, "battery >20");
 
           graphics_fill_rect(batctx, GRect(2, 1, batterychargepct, 4), 3, GCornersAll);
      } else {   // Battery 20% or less
-          #ifdef PBL_PLATFORM_APLITE
+          #ifdef PBL_BW
              graphics_context_set_fill_color(batctx, GColorDarkGray);
           #else
              graphics_context_set_fill_color(batctx, GColorRed);
           #endif
+          APP_LOG(APP_LOG_LEVEL_WARNING, "battery <20");
 
           graphics_fill_rect(batctx, GRect(2, 1, batterychargepct, 4),3, GCornersAll);
      }
 
   //Battery % Markers
-      #ifdef PBL_PLATFORM_APLITE
+      #ifdef PBL_BW
          if(batterycharging == 1) {
-            graphics_context_set_fill_color(batctx, GColorBlack);
-         } else {
             graphics_context_set_fill_color(batctx, GColorWhite);
+         } else {
+            graphics_context_set_fill_color(batctx, GColorBlack);
          }
       #else
          graphics_context_set_fill_color(batctx, GColorBlack);
@@ -167,10 +169,16 @@ void BTLine_update_callback(Layer *BTLayer, GContext* BT1ctx) {
               BTVibesDone = 1;
               vibes_long_pulse();
       }
-
+  
       if(BTConnected == 0) {
-          graphics_context_set_stroke_color(BT1ctx, GColorRed);
-          graphics_context_set_fill_color(BT1ctx, GColorWhite);
+          #ifdef PBL_BW
+              graphics_context_set_stroke_color(BT1ctx, GColorWhite);
+              graphics_context_set_fill_color(BT1ctx, GColorBlack);
+          #else
+              graphics_context_set_stroke_color(BT1ctx, GColorRed);
+              graphics_context_set_fill_color(BT1ctx, GColorWhite);
+          #endif
+        
           graphics_fill_rect(BT1ctx, layer_get_bounds(BTLayer), 0, GCornerNone);
 
         // "X"" Line 1
@@ -192,8 +200,13 @@ void BTLine_update_callback(Layer *BTLayer, GContext* BT1ctx) {
       } else {
        BTVibesDone = 0;
 
-       graphics_context_set_stroke_color(BT1ctx, GColorWhite);
-       graphics_context_set_fill_color(BT1ctx, BGColorHold2);
+      #ifdef PBL_BW  
+         graphics_context_set_stroke_color(BT1ctx, GColorBlack);
+         graphics_context_set_fill_color(BT1ctx, GColorWhite);
+      #else
+         graphics_context_set_stroke_color(BT1ctx, GColorWhite);
+         graphics_context_set_fill_color(BT1ctx, BGColorHold2);
+      #endif  
 
 
        //Line 1
@@ -384,12 +397,12 @@ static void health_handler(HealthEventType event, void *context) {
             if(mask & HealthServiceAccessibilityMaskAvailable) {                
                 int steps = (int)health_service_sum_today(metric);
                 APP_LOG(APP_LOG_LEVEL_INFO, "Steps from Health = %d", steps);
-                //steps = 500000; // Test value
+                //steps = 1000; // Test value
               
                 if (steps > 999) {
-                    snprintf(steps_str, 13, "%d,%03d Steps", steps/1000, steps%1000);            
+                    snprintf(steps_str, 14, "%d,%03d Steps", steps/1000, steps%1000);            
                 } else {
-                    snprintf(steps_str, 13, "%d Steps", steps);
+                    snprintf(steps_str, 14, "%d Steps", steps);
                 }
             } else {
                 strcpy(steps_str, "No Step Data");
@@ -401,7 +414,7 @@ static void health_handler(HealthEventType event, void *context) {
                 int meters = (int)health_service_sum_today(metric);                
                 APP_LOG(APP_LOG_LEVEL_INFO, "Meters from Health = %d", meters);
                
-                //meters = 500000; // TEST VALUE 3500 meters = 2.174 miles / 500 meters = 0.31 miles / 50,000 meters = 31.06 mi
+               // meters = 999; // TEST VALUE 3500 meters = 2.174 miles / 500 meters = 0.31 miles / 50,000 meters = 31.06 mi
             
             //Meters
             if (meters > 999) {
@@ -410,9 +423,13 @@ static void health_handler(HealthEventType event, void *context) {
                     strcpy(meters_out, meters_str);
                     strcat(meters_out, ".");
                     strncat(meters_out, meters1_str, 2);
-                    strcat(meters_out, " K");                       
+                    strcat(meters_out, " km");                       
                 } else {
-                    snprintf(meters_out, 13, "%d Meters", meters);
+                    #ifdef PBL_PLATFORM_CHALK
+                        snprintf(meters_out, 13, "%d m", meters);
+                    #else
+                        snprintf(meters_out, 13, "%d meters", meters);
+                    #endif
                 }
                 APP_LOG(APP_LOG_LEVEL_INFO, "meters_str = %s", meters_str);
             
@@ -1060,7 +1077,7 @@ void handle_init(void) {
 
   // Steps
   #ifdef PBL_PLATFORM_CHALK
-    text_numsteps_layer = text_layer_create(GRect(1, 100, 180, 40));
+    text_numsteps_layer = text_layer_create(GRect(1, 93, 150, 28));
   #else
     text_numsteps_layer = text_layer_create(GRect(1, 85, 144, 28));
   #endif
@@ -1075,7 +1092,7 @@ void handle_init(void) {
   
   // Miles
   #ifdef PBL_PLATFORM_CHALK
-     text_miles_layer = text_layer_create(GRect(3, 135, 177, 29));
+     text_miles_layer = text_layer_create(GRect(3, 119, 177, 28));
      text_layer_set_text_alignment(text_miles_layer, GTextAlignmentCenter);;
   #else
      text_miles_layer = text_layer_create(GRect(1, 112, 144, 28));
@@ -1092,10 +1109,10 @@ void handle_init(void) {
   
   // Meters
   #ifdef PBL_PLATFORM_CHALK
-     text_meters_layer = text_layer_create(GRect(3, 135, 177, 29));
+     text_meters_layer = text_layer_create(GRect(3, 145, 177, 28));
      text_layer_set_text_alignment(text_meters_layer, GTextAlignmentCenter);;
   #else
-     text_meters_layer = text_layer_create(GRect(1, 140, 144, 28));
+     text_meters_layer = text_layer_create(GRect(1, 140, 135, 28));
      text_layer_set_text_alignment(text_meters_layer, GTextAlignmentCenter);;
   #endif
 
@@ -1110,7 +1127,7 @@ void handle_init(void) {
   
   //Bluetooth Logo Setup area
   #ifdef PBL_PLATFORM_CHALK
-     GRect BTArea = GRect(139, 103, 20, 20);
+     GRect BTArea = GRect(145, 97, 20, 20);
   #else
      GRect BTArea = GRect(120, 138, 20, 20);
   #endif
