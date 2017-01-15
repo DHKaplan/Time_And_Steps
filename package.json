@@ -29,6 +29,13 @@
         "resources": {
             "media": [
                 {
+                    "file": "images/Time and Steps Menu Icon.png",
+                    "menuIcon": true,
+                    "name": "IMAGE_MENU_ICON",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
                     "file": "fonts/Roboto Condensed Regular",
                     "name": "FONT_ROBOTO_CONDENSED_23",
                     "targetPlatforms": null,
